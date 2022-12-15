@@ -29,8 +29,8 @@ MIT6.S081实验官方纯净源代码，原作者（Calvin Haynes）转载于MIT�
         | 1  | System call tracing| X |
         | 2 | Sysinfo| X |
       
-- `其他分支`：g++
-- 一个分支对应一个lab，会在make grade取得100分后上传上来，每份代码都会包含详细的注释，方便自己复习。
+- `其他分支`：
+  - 一个分支对应一个lab，会在make grade取得100分后上传上来，每份代码都会包含详细的注释，方便自己复习。
 
 ## 环境说明
 - mac os 13.1
