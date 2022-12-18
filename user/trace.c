@@ -8,7 +8,6 @@ main(int argc, char *argv[])
 {
   int i;
   char *nargv[MAXARG];
-
   if(argc < 3 || (argv[1][0] < '0' || argv[1][0] > '9')){
     fprintf(2, "Usage: %s mask command\n", argv[0]);
     exit(1);
