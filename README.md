@@ -26,7 +26,7 @@ MIT6.S081实验官方纯净源代码，原作者（Calvin Haynes）转载于MIT�
     - 进度：
       - | index  | lab| state|
         | --- | :--- | :---: |
-        | 1  | System call tracing| X |
+        | 1  | Trace| √ |
         | 2 | Sysinfo| X |
       
 - `其他分支`：
