@@ -104,5 +104,5 @@ sys_trace(void)
         return -1;
     struct proc *p = myproc();
     p->mask = trace_num;
-    return 1;
+    return 0;
 }
