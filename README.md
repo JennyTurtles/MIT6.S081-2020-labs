@@ -23,6 +23,7 @@
   - 运行的进程数量：阅读proc.c代码可以发现，proc数组保存了所有的进程状态，遍历数组，找到所有状态不为UNUSED的进程并统计数量即可。
   - 收获：任务2使我进一步加深了核心态到用户态的数据传输方式的理解，并且还涉及到了内存管理和进程管理，这部分还没有系统地进行学习，好在题目不难，应该是在抛砖引玉吧。
 - ### `xv6启动过程初探`
-
+![Image text](https://raw.githubusercontent.com/JennyTurtles/MIT6.S081-2020-labs/syscall/user/XV6启动.jpg)
 
 - ### `完成！`
+![Image text](https://raw.githubusercontent.com/JennyTurtles/MIT6.S081-2020-labs/syscall/user/完成！.png)
