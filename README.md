@@ -25,4 +25,4 @@
   - 当虚拟页表内存在用户数据映射时候，便能直接使用解引用访问虚拟地址了，硬件会自动将通过三级页表将虚拟地址转化为物理地址。
   
 - ### `完成！`
-![Image text]
+![Image text](https://raw.githubusercontent.com/JennyTurtles/MIT6.S081-2020-labs/pgtbl/user/lab3.png)
