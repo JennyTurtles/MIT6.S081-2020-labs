@@ -261,6 +261,9 @@ userinit(void)
   uvminit(p->pagetable, initcode, sizeof(initcode));
   p->sz = PGSIZE;
 
+  //为第一个进程的内核页表添加映射
+  uvmcopy_u2k(p->pagetable,p->pagetable_kernel,0,p->sz);
+
   // prepare for the very first "return" from kernel to user.
   p->trapframe->epc = 0;      // user program counter
   p->trapframe->sp = PGSIZE;  // user stack pointer
@@ -283,11 +286,19 @@ growproc(int n)
 
   sz = p->sz;
   if(n > 0){
+    // 判断是否超过PLIC
+    if(sz + n > PLIC)
+      return -1;
     if((sz = uvmalloc(p->pagetable, sz, sz + n)) == 0) {
       return -1;
     }
+    // 将新分配的映射添加到内核页表
+    if(uvmcopy_u2k(p->pagetable,p->pagetable_kernel,p->sz,sz) < 0)
+      return -1;
   } else if(n < 0){
     sz = uvmdealloc(p->pagetable, sz, sz + n);
+    // 删除多余的映射
+    uvmunmap(p->pagetable_kernel, PGROUNDUP(sz), (PGROUNDUP(p->sz) - PGROUNDUP(sz))/PGSIZE, 0);
   }
   p->sz = sz;
   return 0;
@@ -314,6 +325,13 @@ fork(void)
     return -1;
   }
   np->sz = p->sz;
+
+  // 将新进程中的，用户页表的映射添加到内核页表
+  if(uvmcopy_u2k(np->pagetable, np->pagetable_kernel, 0,p->sz) < 0){
+      freeproc(np);
+      release(&np->lock);
+      return -1;
+  }
 
   np->parent = p;
 
