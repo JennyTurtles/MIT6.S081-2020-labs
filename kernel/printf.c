@@ -117,6 +117,7 @@ printf(char *fmt, ...)
 void
 panic(char *s)
 {
+  backtrace();
   pr.locking = 0;
   printf("panic: ");
   printf(s);
@@ -133,7 +134,12 @@ printfinit(void)
   pr.locking = 1;
 }
 
-void backtrace(void)
-{
-    printf("%")
+void backtrace() {
+    uint64 fp = r_fp();    // 获取当前栈顶fp
+    uint64 top = PGROUNDUP(fp);    // 一个进程的用户栈占用一个页面，当前页面的高地址即用户栈的上界
+    while (fp < top)
+    {
+        printf("%p\n", *((uint64 *) (fp - 8)));
+        fp = *((uint64 *) (fp - 16));
+    }
 }
