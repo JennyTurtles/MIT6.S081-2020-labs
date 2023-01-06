@@ -96,3 +96,17 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+uint64 sys_alarm(void){
+    myproc()->interval = myproc()->trapframe->a0;
+    myproc()->handler = myproc()->trapframe->a1;
+    myproc()->times = 0;
+    return 0;
+}
+
+uint64 sys_return(void){
+    struct proc* p = myproc();
+    memmove(p->trapframe, p->trapframe_copy, sizeof(struct trapframe));
+    p->times = 0; //从trap中移动到sys_return中，sys_return表明hander执行完成，此时可以继续开始计数
+    return 0;
+}

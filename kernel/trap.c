@@ -46,10 +46,9 @@ usertrap(void)
   w_stvec((uint64)kernelvec);
 
   struct proc *p = myproc();
-  
   // save user program counter.
   p->trapframe->epc = r_sepc();
-  
+
   if(r_scause() == 8){
     // system call
 
@@ -76,6 +75,18 @@ usertrap(void)
   if(p->killed)
     exit(-1);
 
+  if (which_dev == 2)
+  {
+      p->times++; // 发生中断时，计时器加一
+      if (p->times == p->interval) // 报警间隔期满,执行报警函数
+      {
+//         p->times = 0;
+         // 将trapframe的副本放在同一个页面中
+         p->trapframe_copy = p->trapframe + 512;
+         memmove(p->trapframe_copy,p->trapframe,sizeof(struct trapframe));
+         p->trapframe->epc = p->handler;
+      }
+  }
   // give up the CPU if this is a timer interrupt.
   if(which_dev == 2)
     yield();
