@@ -4,7 +4,7 @@
 
 - ### `心得`
 - Trap过程梳理：
-  - ![Image text]()
+  - ![Image text](https://raw.githubusercontent.com/JennyTurtles/MIT6.S081-2020-labs/traps/user/Trap.png)
 
 - ### `任务1 回溯` 
   - 编写backtrace()，backtrace()将获取当前栈的栈顶指针，通过读取栈中内容得到函数的调用过程。
@@ -18,4 +18,4 @@
   - 报警函数在执行的过程中会修改寄存器，这会导致原用户空间的函数执行出错，因此运行完报警函数必须返回内核恢复原寄存器内的值。具体实现：trap内修改SEPC之前把trapframe进行备份，保存在proc里面，直到报警函数运行结束，恢复备份里的trapframe。
 
 - ### `完成！`
-![Image text]()
+![Image text](https://raw.githubusercontent.com/JennyTurtles/MIT6.S081-2020-labs/traps/user/lab4.png)
