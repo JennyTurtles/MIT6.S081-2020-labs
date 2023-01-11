@@ -47,11 +47,18 @@ sys_sbrk(void)
   if(argint(0, &n) < 0)
     return -1;
   addr = myproc()->sz;
-  myproc()->sz = myproc()->sz + n;
-//  if(growproc(n) < 0)
-//    return -1;
+
+  // lab5 处理sbrk参数为负的情况
+  if (n < 0)
+  {
+    if(growproc(n) < 0) // 在growproc内部会更新p->sz
+        return -1;
+  }
+  else
+      myproc()->sz = myproc()->sz + n;
   return addr;
 }
+
 
 uint64
 sys_sleep(void)

@@ -69,14 +69,28 @@ usertrap(void)
     // ok
   } else if (r_scause() == 13 || r_scause() == 15)
   {
-      // 分配物理内存
-      char *mem;
-      mem = kalloc();
-      memset(mem, 0, PGSIZE);
-      if(mappages(p->pagetable, PGROUNDDOWN(r_stval()), PGSIZE, (uint64)mem, PTE_W|PTE_X|PTE_R|PTE_U) != 0){
-          kfree(mem);
+//      printf("page fault %p\n",r_stval());
+      //lab5 缺页的地址大于进程的内存范围或小于栈底指针，终止进程
+      if (p->sz < r_stval() || r_stval() < PGROUNDDOWN(p->trapframe->sp))
+      {
           p->killed = 1;
+          exit(-1);
       }
+      else
+      {
+          char *mem = kalloc(); // 分配物理内存
+          if (mem == 0)
+              p->killed = 1;
+          else
+          {
+              memset(mem, 0, PGSIZE);
+              if(mappages(p->pagetable, PGROUNDDOWN(r_stval()), PGSIZE, (uint64)mem, PTE_W|PTE_R|PTE_U) != 0){
+                  kfree(mem);
+                  p->killed = 1;
+              }
+          }
+      }
+
   }
   else {
     printf("usertrap(): unexpected scause %p pid=%d\n", r_scause(), p->pid);
