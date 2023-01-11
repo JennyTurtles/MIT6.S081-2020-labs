@@ -19,4 +19,4 @@
   - walkaddr：read()和write()同样涉及到内存的调用，然而与前面不同的是，它们是系统调用，是在内核态中运行的，内核态中无法触发page fault，因此read()和write()访问内存失败时无法进入usertrap分配新的内存。进一步分析，read()和write()会分别调用copyin()和copyout()，这两者都会使用walkaddr()查询物理地址，因此解决方法是在walkaddr内分配新的内存并建立映射，这与usertrap中的方法是类似的。
 
 - ### `完成！`
-![Image text]
+![Image text](https://raw.githubusercontent.com/JennyTurtles/MIT6.S081-2020-labs/lazy/user/lab5.png)
