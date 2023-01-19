@@ -1,4 +1,4 @@
-# lab5 : Copy-on-Write Fork for xv6
+# lab6 : Copy-on-Write Fork for xv6
 ### 开始日期：2023.01.18
 ### 完成日期：2023.01.19
 - ### `心得`
@@ -27,4 +27,4 @@
     - 在usertrap中取消子进程对父进程内存的映射时，必须通过 *pte &= ~PTE_V，不能使用 *pte = 0。
     - 原因暂时未知，等待后续补充。
 - ### `完成！`
-![Image text]
+![Image text](https://raw.githubusercontent.com/JennyTurtles/MIT6.S081-2020-labs/cow/user/lab6完成.png)
