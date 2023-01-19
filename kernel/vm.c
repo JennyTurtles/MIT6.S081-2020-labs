@@ -6,6 +6,7 @@
 #include "defs.h"
 #include "fs.h"
 
+
 /*
  * the kernel's page table.
  */
@@ -186,9 +187,11 @@ uvmunmap(pagetable_t pagetable, uint64 va, uint64 npages, int do_free)
       panic("uvmunmap: not mapped");
     if(PTE_FLAGS(*pte) == PTE_V)
       panic("uvmunmap: not a leaf");
+
+
     if(do_free){
       uint64 pa = PTE2PA(*pte);
-      kfree((void*)pa);
+       kfree((void*)pa);
     }
     *pte = 0;
   }
@@ -318,20 +321,21 @@ uvmcopy(pagetable_t old, pagetable_t new, uint64 sz)
       panic("uvmcopy: pte should exist");
     if((*pte & PTE_V) == 0)
       panic("uvmcopy: page not present");
+
     pa = PTE2PA(*pte);
-    // lab6 子进程中不分配物理内存，并且禁止读
-    flags = PTE_FLAGS(*pte) & (~PTE_W);
-    if(mappages(new, i, PGSIZE, (uint64)pa, flags) != 0){
+    flags = PTE_FLAGS(*pte);
+
+    // lab6 子进程中不分配物理内存，并且禁止读。第8位用于标记cow映射。
+    if (flags & PTE_W) {
+        flags = (flags | PTE_COW) & ~PTE_W;
+        *pte = PA2PTE(pa) | flags; //父进程的页表设置为不可读
+    }
+    if(mappages(new, i, PGSIZE, (uint64)pa, flags) != 0){  //子进程映射到相同的物理地址，并且设置为不可读
       goto err;
     }
-//    flags = PTE_FLAGS(*pte);
-//    if((mem = kalloc()) == 0)
-//      goto err;
-//    memmove(mem, (char*)pa, PGSIZE);
-//    if(mappages(new, i, PGSIZE, (uint64)mem, flags) != 0){
-//      kfree(mem);
-//      goto err;
-//    }
+
+    // lab6 增加物理内存的引用计数
+      kaddrefcnt((void*)pa);
   }
   return 0;
 
@@ -364,6 +368,12 @@ copyout(pagetable_t pagetable, uint64 dstva, char *src, uint64 len)
   while(len > 0){
     va0 = PGROUNDDOWN(dstva);
     pa0 = walkaddr(pagetable, va0);
+
+    // lab6 pa0如果是cow页面，就再分配一个新的页面
+      if (iscowpage(pagetable, va0) == 0) {
+          pa0 = (uint64)cowalloc(pagetable, va0);
+      }
+
     if(pa0 == 0)
       return -1;
     n = PGSIZE - (dstva - va0);
@@ -389,6 +399,7 @@ copyin(pagetable_t pagetable, char *dst, uint64 srcva, uint64 len)
   while(len > 0){
     va0 = PGROUNDDOWN(srcva);
     pa0 = walkaddr(pagetable, va0);
+
     if(pa0 == 0)
       return -1;
     n = PGSIZE - (srcva - va0);
