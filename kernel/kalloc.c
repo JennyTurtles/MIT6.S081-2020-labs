@@ -111,8 +111,8 @@ void* cowalloc(pagetable_t pagetable, uint64 va) {
     memmove(mem, (char*)pa, PGSIZE); //把父进程的物理内存拷贝给子进程
 
     // remap问题
-    *pte &= ~PTE_V;
-//    *pte = 0;
+//    *pte &= ~PTE_V;
+    *pte = 0;
 //    uvmunmap(pagetable,va,1,0);
 
     // 为子进程新的物理内存建立映射
