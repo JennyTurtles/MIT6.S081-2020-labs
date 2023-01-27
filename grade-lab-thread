@@ -23,7 +23,7 @@ def test_uthread():
 def test_answers():
     # just a simple sanity check, will be graded manually
     check_answers("answers-thread.txt")
-    
+
 # test the first ph task: add locks to eliminate the missing keys.
 @test(10, "ph_safe")
 def test_ph_safe():
