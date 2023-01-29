@@ -23,4 +23,4 @@
   - 为了实现此功能需要使用睡眠锁，最后一个线程到达屏障后唤醒其他线程。
   - 睡眠锁用到了条件变量，为了保证多线程修改条件变量的正确性，必须加上互斥锁，使得条件变量的修改操作在互斥锁锁定的临界区内。
 - ### `完成！`
-![Image text]()
+![Image text](https://raw.githubusercontent.com/JennyTurtles/MIT6.S081-2020-labs/thread/user/完成lab7.png)
