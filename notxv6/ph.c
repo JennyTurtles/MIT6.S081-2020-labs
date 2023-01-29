@@ -17,6 +17,9 @@ struct entry *table[NBUCKET];
 int keys[NKEYS];
 int nthread = 1;
 
+// lab7 声明锁
+pthread_mutex_t lock;
+
 double
 now()
 {
@@ -35,6 +38,7 @@ insert(int key, int value, struct entry **p, struct entry *n)
   *p = e;
 }
 
+//key:随机生成 value:线程号
 static 
 void put(int key, int value)
 {
@@ -51,7 +55,10 @@ void put(int key, int value)
     e->value = value;
   } else {
     // the new is new.
+    // lab7 这里涉及到对链表的写操作，需要使用互斥锁避免节点丢失
+    pthread_mutex_lock(&lock);
     insert(key, value, &table[i], table[i]);
+    pthread_mutex_unlock(&lock);
   }
 }
 
@@ -99,6 +106,8 @@ get_thread(void *xa)
 int
 main(int argc, char *argv[])
 {
+  //lab7 初始化锁
+  pthread_mutex_init(&lock, NULL);
   pthread_t *tha;
   void *value;
   double t1, t0;

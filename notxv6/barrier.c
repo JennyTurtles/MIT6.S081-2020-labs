@@ -30,7 +30,19 @@ barrier()
   // Block until all threads have called barrier() and
   // then increment bstate.round.
   //
-  
+  // lab7
+    pthread_mutex_lock(&bstate.barrier_mutex); // 条件变量的操作需要在互斥锁锁定的临界区内
+    bstate.nthread++;
+
+    if (bstate.nthread == nthread) {
+        pthread_cond_broadcast(&bstate.barrier_cond);
+        bstate.round++;
+        bstate.nthread = 0;
+    }
+    else {
+        pthread_cond_wait(&bstate.barrier_cond, &bstate.barrier_mutex);
+    }
+    pthread_mutex_unlock(&bstate.barrier_mutex);
 }
 
 static void *
