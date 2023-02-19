@@ -10,7 +10,6 @@
 #include "defs.h"
 
 void freerange(void *pa_start, void *pa_end);
-void mykfree(void *pa,int pro);
 extern char end[]; // first address after kernel.
                    // defined by kernel.ld.
 
@@ -49,24 +48,6 @@ freerange(void *pa_start, void *pa_end)
         kfree(p);
 }
 
-void
-mykfree(void *pa,int pro)
-{
-    struct run *r;
-
-    if(((uint64)pa % PGSIZE) != 0 || (char*)pa < end || (uint64)pa >= PHYSTOP)
-        panic("kfree");
-
-    // Fill with junk to catch dangling refs.
-    memset(pa, 1, PGSIZE);
-
-    r = (struct run*)pa;
-
-    acquire(&kmem[pro].lock);
-    r->next = kmem[pro].freelist;
-    kmem[pro].freelist = r;
-    release(&kmem[pro].lock);
-}
 // Free the page of physical memory pointed at by v,
 // which normally should have been returned by a
 // call to kalloc().  (The exception is when
@@ -87,7 +68,6 @@ kfree(void *pa)
   // lab8.1 使用当前cpu的空闲列表和锁
   push_off();
   int id = cpuid();
-
 
   acquire(&kmem[id].lock);
   r->next = kmem[id].freelist;
