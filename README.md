@@ -30,4 +30,4 @@
     - LRU算法
       - 为了寻找最长时间未使用的buffer，需要使用时间戳对buffer进行标记，在释放buffer的时候更新时间戳，bget()中基于时间戳选择最合适的buffer。
 - ### `完成！`
-![Image text]()
+![Image text](https://raw.githubusercontent.com/JennyTurtles/MIT6.S081-2020-labs/lock/user/lab8%20完成.png)
