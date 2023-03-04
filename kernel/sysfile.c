@@ -117,7 +117,7 @@ sys_fstat(void)
 
 // Create the path new as a link to the same inode as old.
 uint64
-sys_link(void)
+sys_link(void) // 参考ccc
 {
   char name[DIRSIZ], new[MAXPATH], old[MAXPATH];
   struct inode *dp, *ip;
@@ -322,6 +322,31 @@ sys_open(void)
     return -1;
   }
 
+    if(ip->type == T_SYMLINK && !(omode & O_NOFOLLOW)){
+        for(int i = 0; i < 10; ++i) {
+            // 读出符号链接指向的路径
+            if(readi(ip, 0, (uint64)path, 0, MAXPATH) != MAXPATH) {
+                iunlockput(ip);
+                end_op();
+                return -1;
+            }
+            iunlockput(ip);
+            ip = namei(path);
+            if(ip == 0) {
+                end_op();
+                return -1;
+            }
+            ilock(ip);
+            if(ip->type != T_SYMLINK)
+                break;
+        }
+        if(ip->type == T_SYMLINK) {
+            iunlockput(ip);
+            end_op();
+            return -1;
+        }
+    }
+
   if((f = filealloc()) == 0 || (fd = fdalloc(f)) < 0){
     if(f)
       fileclose(f);
@@ -344,7 +369,6 @@ sys_open(void)
   if((omode & O_TRUNC) && ip->type == T_FILE){
     itrunc(ip);
   }
-
   iunlock(ip);
   end_op();
 
@@ -483,4 +507,29 @@ sys_pipe(void)
     return -1;
   }
   return 0;
+}
+
+uint64 sys_symlink(){
+    char target[MAXPATH], path[MAXPATH];
+    struct inode* ip_link;
+
+    if(argstr(0, target, MAXPATH) < 0 || argstr(1, path, MAXPATH) < 0) {
+        return -1;
+    }
+    begin_op();
+    // 分配inode存放符号链接
+    ip_link = create(path, T_SYMLINK, 0, 0);
+    if(ip_link == 0) {
+        end_op();
+        return -1;
+    }
+    // 将目标写入inode
+    if(writei(ip_link, 0, (uint64)target, 0, MAXPATH) < MAXPATH) {
+        iunlockput(ip_link);
+        end_op();
+        return -1;
+    }
+    iunlockput(ip_link);
+    end_op();
+    return 0;
 }
