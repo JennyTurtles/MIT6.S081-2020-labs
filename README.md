@@ -20,4 +20,4 @@
     - sys_symlink()：创建一个符号链接涉及到磁盘的写入操作，这里首先要调用begin_op()开启事物。使用create()为符号链接创建一个inode，使用writei()将符号链接存放在inode里面。
     - sys_open()：添加对符号链接的处理。如果inode的type是T_SYMLINK且标识符没有O_NOFOLLOW，则跟随符号链接。使用readi()读出inode中的path，使用namei(path)，获取path对应的inode，如果该inode不为符号链接则结束循环返回文件标识符，否则继续跟随符号链接。
 - ### `完成！`
-![Image text](https://raw.githubusercontent.com/JennyTurtles/MIT6.S081-2020-labs/traps/user/lab4.png)
+![Image text](https://raw.githubusercontent.com/JennyTurtles/MIT6.S081-2020-labs/fs/user/lab9%20完成.png)
